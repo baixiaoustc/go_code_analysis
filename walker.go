@@ -7,18 +7,19 @@ import (
 	"log"
 )
 
-var GFset *token.FileSet
+var GFset *token.FileSet        //全局存储token的position
 var GFixedFunc map[string]Fixed //key的格式为Package.Func
 
 func stmtCase(stmt ast.Stmt, todo func(call *ast.CallExpr) bool) bool {
 	switch t := stmt.(type) {
 	case *ast.ExprStmt:
+		log.Printf("表达式语句%+v at line:%v", t, GFset.Position(t.Pos()))
 		if call, ok := t.X.(*ast.CallExpr); ok {
 			return todo(call)
 		}
 	case *ast.ReturnStmt:
 		for i, p := range t.Results {
-			log.Printf("return表达式%d:%v at line:%v", i, p, GFset.Position(p.Pos()))
+			log.Printf("return语句%d:%v at line:%v", i, p, GFset.Position(p.Pos()))
 			if call, ok := p.(*ast.CallExpr); ok {
 				return todo(call)
 			}
@@ -31,7 +32,7 @@ func stmtCase(stmt ast.Stmt, todo func(call *ast.CallExpr) bool) bool {
 				for i, p := range t.Elts {
 					switch t := p.(type) {
 					case *ast.KeyValueExpr:
-						log.Printf("构造赋值%d:%+v at line:%v", i, t.Value, GFset.Position(p.Pos()))
+						log.Printf("构造赋值语句%d:%+v at line:%v", i, t.Value, GFset.Position(p.Pos()))
 						if call, ok := t.Value.(*ast.CallExpr); ok {
 							return todo(call)
 						}
@@ -104,6 +105,7 @@ func AllCallCase(n ast.Node, todo func(call *ast.CallExpr) bool) (find bool) {
 				c := todo(t)
 				find = find || c
 			case *ast.CompositeLit:
+				//构造表达式 999
 				for i, p := range t.Elts {
 					switch t := p.(type) {
 					case *ast.KeyValueExpr:
@@ -185,7 +187,7 @@ type FindContext struct {
 	LocalFunc *ast.FuncDecl
 }
 
-func (f *FindContext) Visit(n ast.Node) (w ast.Visitor) {
+func (f *FindContext) Visit(n ast.Node) ast.Visitor {
 	if n == nil {
 		return f
 	}
