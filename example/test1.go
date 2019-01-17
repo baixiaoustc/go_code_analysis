@@ -1,9 +1,9 @@
-package example
+package main
 
 import "fmt"
 import "strings"
 
-func main() {
+func test1() {
 	hello := "Hello"
 	world := "World"
 	words := []string{hello, world}

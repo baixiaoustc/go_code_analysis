@@ -1,11 +1,11 @@
-package example
+package main
 
 import (
 	"context"
 	"fmt"
 )
 
-func test(a string, b int) {
+func test2(a string, b int) {
 	context.WithCancel(nil) //000
 
 	if _, err := context.WithCancel(nil); err != nil { //111
