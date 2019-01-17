@@ -29,7 +29,7 @@ func test2(a string, b int) {
 	}()
 
 	data := map[string]interface{}{
-		"x2": context.WithCancel(nil), //999
+		"x2": context.WithValue(nil, "k", "v"), //999
 	}
 	fmt.Println(data)
 
