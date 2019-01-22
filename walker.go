@@ -290,12 +290,12 @@ func (f *FixContext) Visit(n ast.Node) (w ast.Visitor) {
 
 	if f.LocalFunc != nil {
 		if f.FuncType != nil {
-			name := fmt.Sprintf("%s.%s@%s", f.Package, f.FuncType.Name, f.LocalFunc.Name.Name)
+			name := fmt.Sprintf("%s@%s", f.FuncType.Name, f.LocalFunc.Name.Name)
 			if name != f.TargetFunc.Name {
 				return f
 			}
 		} else {
-			name := fmt.Sprintf("%s.%s", f.Package, f.LocalFunc.Name.Name)
+			name := fmt.Sprintf("%s", f.LocalFunc.Name.Name)
 			if name != f.TargetFunc.Name {
 				return f
 			}
