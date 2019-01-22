@@ -42,19 +42,10 @@ func main() {
 }
 
 func TestParserAST(t *testing.T) {
-	src := []byte(`/*comment0*/
-package main
-import "fmt"
-//comment1
-/*comment2*/
-func main() {
-  fmt.Println("Hello, world!")
-}
-`)
 
 	// Create the AST by parsing src.
 	fset := token.NewFileSet() // positions are relative to fset
-	f, err := parser.ParseFile(fset, "", src, parser.ParseComments)
+	f, err := parser.ParseFile(fset, "./example/test3.go", nil, parser.ParseComments)
 	if err != nil {
 		panic(err)
 	}
@@ -66,7 +57,7 @@ func main() {
 func TestInspectAST(t *testing.T) {
 	// Create the AST by parsing src.
 	fset := token.NewFileSet() // positions are relative to fset
-	f, err := parser.ParseFile(fset, "./example/test1.go", nil, parser.ParseComments)
+	f, err := parser.ParseFile(fset, "./example/test3.go", nil, parser.ParseComments)
 	if err != nil {
 		panic(err)
 	}

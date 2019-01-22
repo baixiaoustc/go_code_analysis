@@ -193,6 +193,7 @@ type FindContext struct {
 	File      string
 	Package   string
 	LocalFunc *ast.FuncDecl
+	FuncType  *ast.Ident
 }
 
 func (f *FindContext) Visit(n ast.Node) ast.Visitor {
@@ -203,6 +204,10 @@ func (f *FindContext) Visit(n ast.Node) ast.Visitor {
 	if fn, ok := n.(*ast.FuncDecl); ok {
 		log.Printf("函数[%s.%s]开始 at line:%v", f.Package, fn.Name.Name, GFset.Position(fn.Pos()))
 		f.LocalFunc = fn
+
+		if fn.Recv != nil && len(fn.Recv.List) == 1 {
+			f.FuncType = fn.Recv.List[0].Type.(*ast.Ident)
+		}
 	} else {
 		log.Printf("类型%T at line:%v", n, GFset.Position(n.Pos()))
 	}
@@ -211,7 +216,7 @@ func (f *FindContext) Visit(n ast.Node) ast.Visitor {
 
 	if find {
 		name := fmt.Sprintf("%s.%s", f.Package, f.LocalFunc.Name)
-		GFixedFunc[name] = Fixed{FuncDesc: FuncDesc{f.File, f.Package, f.LocalFunc.Name.Name}}
+		GFixedFunc[name] = Fixed{FuncDesc: FuncDesc{f.File, f.Package, fmt.Sprintf("%s.%s", f.LocalFunc.Name.Name, f.FuncType.Name)}}
 	}
 
 	return f
