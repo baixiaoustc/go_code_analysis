@@ -193,7 +193,7 @@ type FindContext struct {
 	File      string
 	Package   string
 	LocalFunc *ast.FuncDecl
-	FuncType  *ast.Ident
+	FuncType  *ast.Ident //用来存储函数是不是某个类的方法
 }
 
 func (f *FindContext) Visit(n ast.Node) ast.Visitor {
@@ -215,8 +215,13 @@ func (f *FindContext) Visit(n ast.Node) ast.Visitor {
 	find := AllCallCase(n, f.FindCallFunc)
 
 	if find {
-		name := fmt.Sprintf("%s.%s", f.Package, f.LocalFunc.Name)
-		GFixedFunc[name] = Fixed{FuncDesc: FuncDesc{f.File, f.Package, fmt.Sprintf("%s.%s", f.LocalFunc.Name.Name, f.FuncType.Name)}}
+		if f.FuncType != nil {
+			name := fmt.Sprintf("%s.%s@%s", f.Package, f.FuncType.Name, f.LocalFunc.Name.Name)
+			GFixedFunc[name] = Fixed{FuncDesc: FuncDesc{f.File, f.Package, fmt.Sprintf("%s@%s", f.LocalFunc.Name.Name, f.FuncType.Name)}}
+		} else {
+			name := fmt.Sprintf("%s.%s", f.Package, f.LocalFunc.Name.Name)
+			GFixedFunc[name] = Fixed{FuncDesc: FuncDesc{f.File, f.Package, f.LocalFunc.Name.Name}}
+		}
 	}
 
 	return f
@@ -255,6 +260,7 @@ type FixContext struct {
 	File       string
 	Package    string
 	LocalFunc  *ast.FuncDecl
+	FuncType   *ast.Ident //用来存储函数是不是某个类的方法
 	TargetFunc FuncDesc
 	CalleeFunc FuncDesc
 }
@@ -276,17 +282,23 @@ func (f *FixContext) Visit(n ast.Node) (w ast.Visitor) {
 	if fn, ok := n.(*ast.FuncDecl); ok {
 		log.Printf("函数[%s.%s]开始 at line:%v", f.Package, fn.Name.Name, GFset.Position(fn.Pos()))
 		f.LocalFunc = fn
+
+		if fn.Recv != nil && len(fn.Recv.List) == 1 {
+			f.FuncType = fn.Recv.List[0].Type.(*ast.Ident)
+		}
 	}
 
 	if f.LocalFunc != nil && f.LocalFunc.Name.Name != f.TargetFunc.Name {
-		//todo 最后一个条件有问题，无法辨别类的函数
-		//再次尝试
-		if list := strings.Split(f.TargetFunc.Name, "@"); len(list) == 2 {
-			if list[1] != f.LocalFunc.Name.Name {
+		if f.FuncType != nil {
+			name := fmt.Sprintf("%s.%s@%s", f.Package, f.FuncType.Name, f.LocalFunc.Name.Name)
+			if name != f.TargetFunc.Name {
 				return f
 			}
 		} else {
-			return f
+			name := fmt.Sprintf("%s.%s", f.Package, f.LocalFunc.Name.Name)
+			if name != f.TargetFunc.Name {
+				return f
+			}
 		}
 	}
 
