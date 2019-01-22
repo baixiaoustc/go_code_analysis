@@ -54,11 +54,12 @@ func TestAutoGenContext(t *testing.T) {
 	}
 
 	doRelation(callMap)
-	for _, v := range GFixedFunc {
+	for k, v := range GFixedFunc {
 		re := CalledRelation{
 			Callees: make([]FuncDesc, 0),
 		}
 		depthTraversal(v.RelationsTree, "", re, &v.RelationList)
+		GFixedFunc[k] = v
 	}
 	for k, v := range GFixedFunc {
 		log.Printf("GFixedFunc:%s %v", k, v)
