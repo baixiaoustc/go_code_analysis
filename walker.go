@@ -292,11 +292,13 @@ func (f *FixContext) Visit(n ast.Node) (w ast.Visitor) {
 		if f.FuncType != nil {
 			name := fmt.Sprintf("%s@%s", f.FuncType.Name, f.LocalFunc.Name.Name)
 			if name != f.TargetFunc.Name {
+				log.Printf("不匹配1 %s,%s", name, f.TargetFunc.Name)
 				return f
 			}
 		} else {
 			name := fmt.Sprintf("%s", f.LocalFunc.Name.Name)
 			if name != f.TargetFunc.Name {
+				log.Printf("不匹配2 %s,%s", name, f.TargetFunc.Name)
 				return f
 			}
 		}
