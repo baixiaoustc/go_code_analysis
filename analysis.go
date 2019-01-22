@@ -23,7 +23,7 @@ type Fixed struct {
 //函数定义
 type FuncDesc struct {
 	File    string //文件路径
-	Package string
+	Package string //package名
 	Name    string //函数名，格式为Package.Func
 }
 

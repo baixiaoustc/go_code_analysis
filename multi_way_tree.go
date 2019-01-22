@@ -2,13 +2,13 @@ package go_code_analysis
 
 import (
 	"fmt"
+	"log"
 )
 
 type MWTNode struct {
 	Key      string
 	Value    FuncDesc
 	N        int
-	Level    int
 	Children []*MWTNode
 }
 
@@ -23,16 +23,14 @@ func BuildFromCallMap(head *MWTNode, callMap map[string]CallerRelation) {
 		}
 
 		tmp := nodeList[0]
-		fmt.Printf("tmp %+v", tmp)
+		log.Printf("tmp %+v", tmp)
 		for callerName, callRelation := range callMap {
 			for _, callee := range callRelation.Callees {
 				if tmp.Key == fmt.Sprintf("%s.%s", callee.Package, callee.Name) {
-					fmt.Printf("found caller:%s -> callee:%s", callerName, callee)
+					log.Printf("found caller:%s -> callee:%s", callerName, callee)
 
 					key := fmt.Sprintf("%s.%s", callRelation.Caller.Package, callRelation.Caller.Name)
 					if _, ok := nodeMap[key]; !ok {
-
-						//todo 存在反复入队列的情况，可以优化
 						newNode := &MWTNode{
 							Key:      key,
 							Value:    FuncDesc{callRelation.Caller.File, callRelation.Caller.Package, callRelation.Caller.Name},
@@ -49,19 +47,19 @@ func BuildFromCallMap(head *MWTNode, callMap map[string]CallerRelation) {
 		}
 		nodeList = nodeList[1:]
 
-		//fmt.Printf("head %+v", head)
-		fmt.Printf("nodeList len:%d", len(nodeList))
+		//log.Printf("head %+v", head)
+		log.Printf("nodeList len:%d", len(nodeList))
 	}
 }
 
 func depthTraversal(head *MWTNode, s string, re CalledRelation, list *[]CalledRelation) {
 	s = fmt.Sprintf("%s<-%s", s, head.Key)
 	re.Callees = append(re.Callees, head.Value)
-	//fmt.Printf("%+v: %s %+v", head, s, re.Callees)
+	//log.Printf("%+v: %s %+v", head, s, re.Callees)
 
 	if head.N == 0 {
-		fmt.Printf("找到反向调用链:%s", s)
-		fmt.Printf("re.Callees:%+v", re.Callees)
+		log.Printf("找到反向调用链:%s", s)
+		log.Printf("re.Callees:%+v", re.Callees)
 		*list = append(*list, re)
 		s = ""
 		re.Callees = make([]FuncDesc, 0)
