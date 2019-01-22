@@ -519,16 +519,6 @@ func (f *FixContext) genSourceCtx(fn *ast.FuncDecl) {
 
 func doFind(files []string) {
 	for _, file := range files {
-		if !strings.Contains(file, "backend") {
-			return
-		}
-		if strings.Contains(file, "serverapi") {
-			return
-		}
-		if strings.Contains(file, "vendor") {
-			return
-		}
-
 		// Create the AST by parsing src.
 		fset := token.NewFileSet() // positions are relative to fset
 		f, err := parser.ParseFile(fset, file, nil, 0)
