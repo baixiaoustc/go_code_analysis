@@ -38,7 +38,7 @@ func test3a() {
 }
 
 func test3b() {
-	test3b()
+	//test3b()
 	inner.Itest1()
 }
 

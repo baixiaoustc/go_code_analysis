@@ -288,7 +288,7 @@ func (f *FixContext) Visit(n ast.Node) (w ast.Visitor) {
 		}
 	}
 
-	if f.LocalFunc != nil && f.LocalFunc.Name.Name != f.TargetFunc.Name {
+	if f.LocalFunc != nil {
 		if f.FuncType != nil {
 			name := fmt.Sprintf("%s.%s@%s", f.Package, f.FuncType.Name, f.LocalFunc.Name.Name)
 			if name != f.TargetFunc.Name {
