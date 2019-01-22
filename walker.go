@@ -217,7 +217,7 @@ func (f *FindContext) Visit(n ast.Node) ast.Visitor {
 	if find {
 		if f.FuncType != nil {
 			name := fmt.Sprintf("%s.%s@%s", f.Package, f.FuncType.Name, f.LocalFunc.Name.Name)
-			GFixedFunc[name] = Fixed{FuncDesc: FuncDesc{f.File, f.Package, fmt.Sprintf("%s@%s", f.LocalFunc.Name.Name, f.FuncType.Name)}}
+			GFixedFunc[name] = Fixed{FuncDesc: FuncDesc{f.File, f.Package, fmt.Sprintf("%s@%s", f.FuncType.Name, f.LocalFunc.Name.Name)}}
 		} else {
 			name := fmt.Sprintf("%s.%s", f.Package, f.LocalFunc.Name.Name)
 			GFixedFunc[name] = Fixed{FuncDesc: FuncDesc{f.File, f.Package, f.LocalFunc.Name.Name}}
