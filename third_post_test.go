@@ -40,7 +40,6 @@ func TestAutoGenContext(t *testing.T) {
 		log.Printf("no need fix func")
 		return
 	}
-	return
 
 	args := []string{project}
 	doAnalysis(&build.Default, false, args)
