@@ -193,20 +193,20 @@ type FindContext struct {
 	File      string
 	Package   string
 	LocalFunc *ast.FuncDecl
-	FuncType  *ast.Ident //用来存储函数是不是某个类的方法
 }
 
 func (f *FindContext) Visit(n ast.Node) ast.Visitor {
 	if n == nil {
 		return f
 	}
+	var FuncType *ast.Ident //用来存储函数是不是某个类的方法
 
 	if fn, ok := n.(*ast.FuncDecl); ok {
 		log.Printf("函数[%s.%s]开始 at line:%v", f.Package, fn.Name.Name, GFset.Position(fn.Pos()))
 		f.LocalFunc = fn
 
 		if fn.Recv != nil && len(fn.Recv.List) == 1 {
-			f.FuncType = fn.Recv.List[0].Type.(*ast.Ident)
+			FuncType = fn.Recv.List[0].Type.(*ast.Ident)
 		}
 	} else {
 		log.Printf("类型%T at line:%v", n, GFset.Position(n.Pos()))
@@ -215,9 +215,9 @@ func (f *FindContext) Visit(n ast.Node) ast.Visitor {
 	find := AllCallCase(n, f.FindCallFunc)
 
 	if find {
-		if f.FuncType != nil {
-			name := fmt.Sprintf("%s.%s@%s", f.Package, f.FuncType.Name, f.LocalFunc.Name.Name)
-			GFixedFunc[name] = Fixed{FuncDesc: FuncDesc{f.File, f.Package, fmt.Sprintf("%s@%s", f.FuncType.Name, f.LocalFunc.Name.Name)}}
+		if FuncType != nil {
+			name := fmt.Sprintf("%s.%s@%s", f.Package, FuncType.Name, f.LocalFunc.Name.Name)
+			GFixedFunc[name] = Fixed{FuncDesc: FuncDesc{f.File, f.Package, fmt.Sprintf("%s@%s", FuncType.Name, f.LocalFunc.Name.Name)}}
 		} else {
 			name := fmt.Sprintf("%s.%s", f.Package, f.LocalFunc.Name.Name)
 			GFixedFunc[name] = Fixed{FuncDesc: FuncDesc{f.File, f.Package, f.LocalFunc.Name.Name}}
@@ -260,7 +260,6 @@ type FixContext struct {
 	File       string
 	Package    string
 	LocalFunc  *ast.FuncDecl
-	FuncType   *ast.Ident //用来存储函数是不是某个类的方法
 	TargetFunc FuncDesc
 	CalleeFunc FuncDesc
 }
@@ -278,27 +277,28 @@ func (f *FixContext) Visit(n ast.Node) (w ast.Visitor) {
 	if n == nil {
 		return f
 	}
+	var FuncType *ast.Ident //用来存储函数是不是某个类的方法
 
 	if fn, ok := n.(*ast.FuncDecl); ok {
 		log.Printf("函数[%s.%s]开始 at line:%v", f.Package, fn.Name.Name, GFset.Position(fn.Pos()))
 		f.LocalFunc = fn
 
 		if fn.Recv != nil && len(fn.Recv.List) == 1 {
-			f.FuncType = fn.Recv.List[0].Type.(*ast.Ident)
+			FuncType = fn.Recv.List[0].Type.(*ast.Ident)
 		}
 	}
 
 	if f.LocalFunc != nil {
-		if f.FuncType != nil {
-			name := fmt.Sprintf("%s@%s", f.FuncType.Name, f.LocalFunc.Name.Name)
+		if FuncType != nil {
+			name := fmt.Sprintf("%s@%s", FuncType.Name, f.LocalFunc.Name.Name)
 			if name != f.TargetFunc.Name {
-				log.Printf("不匹配1 %s,%s", name, f.TargetFunc.Name)
+				//log.Printf("不匹配1 %s,%s", name, f.TargetFunc.Name)
 				return f
 			}
 		} else {
 			name := fmt.Sprintf("%s", f.LocalFunc.Name.Name)
 			if name != f.TargetFunc.Name {
-				log.Printf("不匹配2 %s,%s", name, f.TargetFunc.Name)
+				//log.Printf("不匹配2 %s,%s", name, f.TargetFunc.Name)
 				return f
 			}
 		}
