@@ -595,16 +595,6 @@ func fixWithContext(fixed Fixed, relations CalledRelation) {
 	for i, callee := range relations.Callees {
 		file := callee.File
 
-		if !strings.Contains(file, "backend") {
-			continue
-		}
-		if strings.Contains(file, "serverapi") {
-			continue
-		}
-		if strings.Contains(file, "vendor") {
-			continue
-		}
-
 		// Create the AST by parsing src.
 		fset := token.NewFileSet() // positions are relative to fset
 		f, err := parser.ParseFile(fset, file, nil, parser.ParseComments)
