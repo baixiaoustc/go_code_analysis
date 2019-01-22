@@ -60,6 +60,8 @@ func TestAutoGenContext(t *testing.T) {
 		}
 		depthTraversal(v.RelationsTree, "", re, &v.RelationList)
 	}
-
+	for k, v := range GFixedFunc {
+		log.Printf("GFixedFunc:%s %v", k, v)
+	}
 	doFix()
 }
