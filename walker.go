@@ -260,8 +260,8 @@ type FixContext struct {
 	File       string
 	Package    string
 	LocalFunc  *ast.FuncDecl
-	TargetFunc FuncDesc
-	CalleeFunc FuncDesc
+	TargetFunc FuncDesc //希望自动修复的函数
+	CalleeFunc FuncDesc //上述函数调用的下一级函数
 }
 
 type GenFuncType int
